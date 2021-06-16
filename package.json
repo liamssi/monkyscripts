@@ -1,0 +1,36 @@
+{
+  "name": "monkyscripts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tamperMonkey.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c ",
+    "dev": "rollup -c -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liamssi/monkyscripts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/liamssi/monkyscripts/issues"
+  },
+  "homepage": "https://github.com/liamssi/monkyscripts#readme",
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^8.2.1",
+    "nodemon": "^2.0.7",
+    "postcss": "^8.3.4",
+    "postcss-cssnext": "^3.1.0",
+    "postcss-nested": "^5.0.5",
+    "postcss-simple-vars": "^6.0.3",
+    "rollup": "^2.52.0",
+    "rollup-plugin-postcss": "^4.0.0",
+    "tslib": "^2.3.0",
+    "typescipt": "^1.0.0"
+  },
+  "dependencies": {
+    "@types/tampermonkey": "^4.0.0"
+  }
+}

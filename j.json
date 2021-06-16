@@ -1,0 +1,54 @@
+{
+  "resp_result": {
+    "resp_code": 200,
+    "result": {
+      "current_record_count": 1,
+      "products": {
+        "product": [
+          {
+            "app_sale_price": "34.51",
+            "app_sale_price_currency": "USD",
+            "commission_rate": "7.0%",
+            "discount": "0%",
+            "evaluate_rate": "84.5%",
+            "first_level_category_id": 1511,
+            "first_level_category_name": "Watches",
+            "hot_product_commission_rate": "0.0%",
+            "lastest_volume": 33433,
+            "original_price": "34.51",
+            "original_price_currency": "USD",
+            "product_detail_url": "https://www.aliexpress.com/item/4000094534783.html",
+            "product_id": 4000094534783,
+            "product_main_image_url": "https://ae04.alicdn.com/kf/H77cdd4f1b4d44afcb3b07b975066f3bdy.jpg",
+            "product_small_image_urls": {
+              "string": [
+                "https://ae04.alicdn.com/kf/H77cdd4f1b4d44afcb3b07b975066f3bdy.jpg",
+                "https://ae04.alicdn.com/kf/Hef6fb3d2c75b4b3fb9a9b375ac0ca861k.jpg",
+                "https://ae04.alicdn.com/kf/Hd9c8102d22a944f0856b9611201ccd1c9.jpg",
+                "https://ae04.alicdn.com/kf/Hab06f9ac46934e2691e31da221b8df054.jpg",
+                "https://ae04.alicdn.com/kf/Ha697c20dc2674ff4b67dedd08e7ca2c0X.jpg",
+                "https://ae04.alicdn.com/kf/H65384bc3d1ae445e8d9a640be75ac884c.jpg"
+              ]
+            },
+            "product_title": "2021 Minimalist Men's Fashion Ultra Thin Watches Simple Men Business Stainless Steel Mesh Belt Quartz Watch relogio masculino",
+            "promotion_link": "https://s.click.aliexpress.com/s/IDFv0J6NoaU59WtyjJwa5IWWbvPrMklnxfMGl7uDwKemVcbLbUOniq9L3pr1F9bAVuhTkpHxRLeytL541CjrJWfghPlPhlqj9RYse8VqGvQYEihaYBVBTVtjaDEfvThzQGpPV9Nt0xk432yy2MROU0kXVWo8RZ8cBtob8qCU4QRtGa5kYJFv7kZflCmBR83LB7vcUnjyl8wCi8iVLaVDVAv20hP2NmsFG7loQCFwp3f3ESNcnVTs0gO60c5tqx0VMVRVSxGOAHxjPizLW7fTe0EZ1IGaB5ObSeJGQ7zC4TVDVYaoUftWMwx0MuEk25PAOCq9FFmeiXHq63rKM55gzsjLYkqdyCZ7xBLs70o0nYrAEaUrd2aqxyTikB8XrseVE3Ayu016DXSmlTrsjvuLTTLVUm6bSJvWGXG9y60AqvOkjK1IIbgT3PxraAv93M3ftIVP4sY2ymqfp1YptuOxUBi7GmvvJctk5vfgM4o9cGmysf9rBbqBdX07F9KOJLCcp4S6TIIsnWq9kZMdMUROqQKuWPScfJVwpynxBblXg5zPCvL964WtjxpEDBQErqRfDCMZSxb8JtUnh8HpB1ViLHAf4Sj9Bt0Dvm8DkPAaCxxoMCp2lIt8t2dpmg8RlQV87qu4j0OTF04vYOZjVWkLyZftijPbeoBColn3VpPpoxHMlctuKwnNLuR6uOq4XNRPKKZYRErN8wbRDwxt",
+            "relevant_market_commission_rate": "3.0%",
+            "sale_price": "34.51",
+            "sale_price_currency": "USD",
+            "second_level_category_id": 200362146,
+            "second_level_category_name": "Men's Watches",
+            "shop_id": 5065438,
+            "shop_url": "https://www.aliexpress.com/store/5065438",
+            "target_app_sale_price": "29.05",
+            "target_app_sale_price_currency": "EUR",
+            "target_original_price": "29.05",
+            "target_original_price_currency": "EUR",
+            "target_sale_price": "29.05",
+            "target_sale_price_currency": "EUR"
+          }
+        ]
+      }
+    }
+  },
+  "request_id": "5l7vc4ua380e"
+}
