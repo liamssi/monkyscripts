@@ -1,85 +1,121 @@
 
+type matchRule = {
+    urlMatch: string | RegExp,
+    bodyMatch?: string | RegExp
+}
 
-type httpHeader = { [key: string]: string }
-export class XMLHttpInterceptor extends XMLHttpRequest{
+export class XMLHttpInterceptor {
 
 
-    private XMLHttpRequestOpen = XMLHttpRequest.prototype.open;
+    private patched: boolean = false
+    private rule: matchRule
+
+
+
+
+    private XMLHttpRequestOpen = XMLHttpRequest.prototype.open
     private XMLHttpRequestSend = XMLHttpRequest.prototype.send;
     private XMLHttpRequestsetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
-    private patched = false
 
-    private headers: httpHeader[] = []
-    //private url: string
-    constructor() {
-        super();
+
+    constructor(rule: matchRule) {
+        this.rule = rule
     }
 
-    private saveHeader = (hedear: httpHeader) => {
-        this.headers.push(hedear)
+
+
+    public get getPatched(): boolean {
+        return this.patched
+    }
+    public get getsRule() {
+        return this.rule
+    }
+    public set setRule(rule: matchRule) {
+
+        this.rule = rule
     }
 
-    private flush = () => {
 
-        this.headers = []
-     //   this.url = ""
-    }
-    public patch = (targetUrl: string) => {
+    // return a promise that resolves when the first match request found 
+    public patch(matchCallback: (request?: XMLHttpRequest, unpatch?: () => void) => void = () => { }) {
 
-
-
-        //* patch the open method
-        XMLHttpRequest.prototype.open = (method: string, url: string, async?: boolean,): void => {
-            this.url = url;
-            this.XMLHttpRequestOpen.call(this, method, url, async ? async : true);
+        if (this.patched) {
+            return
         }
-        //*patch set headers
-        XMLHttpRequest.prototype.setRequestHeader = (header: string, value: string) => {
-            // console.log("url from set header",header)
-            // this.prototype.headers
-            this.saveHeader({ header: value })
-            this.XMLHttpRequestsetRequestHeader.call(this, header, value);
-            // Create a list for the header that if it does not exist
+        let targetUrlMatch = this.rule.urlMatch
+        let bodyMatch = this.rule.bodyMatch || ''
+        let XMLHttpRequestOpen = this.XMLHttpRequestOpen
+        let XMLHttpRequestSend = this.XMLHttpRequestSend
+        let XMLHttpRequestsetRequestHeader = this.XMLHttpRequestsetRequestHeader
 
-            // Add the value to the header
-            // this.headers[header].push(value);
+
+        //* patch the open method to Capture 
+        XMLHttpRequest.prototype.open = function (method: string, url: string, async?: boolean,): void {
+            this.url = url;
+            XMLHttpRequestOpen.call(this, method, url, async ? async : true);
+        }
+
+        //*patch setHeaders to capture Headers
+        XMLHttpRequest.prototype.setRequestHeader = function (header: string, value: string) {
+
+
+            XMLHttpRequestsetRequestHeader.call(this, header, value);
+            // Create a list for the header that if it does not exist
+            if (this.url?.match(targetUrlMatch)) {
+                if (!this.headers) {
+                    this.headers = {};
+                }
+                // Create a list for the header that if it does not exist
+
+                //!tst 
+                // if (!this.headers[header]) {
+                //     this.headers[header] = [];
+                // }
+
+                // Add the value to the header
+                //! this.headers[header].push(value);
+                this.headers[header] = value;
+            }
+
+
         };
 
-        //* patch send
+        //* patch send to 
         XMLHttpRequest.prototype.send = function (body) {
 
-            if (
-                this. url.match(targetUrl) &&
-                body.match(
-                    "fb_api_req_friendly_name=GroupsCometMembersPageNewMembersSectionRefetchQuery"
-                )
-            ) {
-                
+            if (this.url?.match(targetUrlMatch) && body?.toString().match(bodyMatch)) {
+
                 this.addEventListener(
-                    "readystatechange",
-                    () => {
+                    "readystatechange", () => {
                         if (this.readyState == 4) {
-                            // patchCallback(this.responseText)
-                         //   spider(this.url, this.headers, body);
+
+                            matchCallback(this)
+
                         }
+
                     },
+
                     false
                 );
 
-              //  unpatch();
+
             }
 
-            this.XMLHttpRequestSend.call(this, body);
+            XMLHttpRequestSend.call(this, body);
         };
-
-
-
-
+        this.patched = true
 
     }
 
 
-
+    //* unpatch function 
+    public unpatch() {
+        if (!this.patched) return
+        XMLHttpRequest.prototype.open = this.XMLHttpRequestOpen;
+        XMLHttpRequest.prototype.send = this.XMLHttpRequestSend;
+        XMLHttpRequest.prototype.setRequestHeader = this.XMLHttpRequestsetRequestHeader;
+        this.patched = false
+    }
 
 
 }

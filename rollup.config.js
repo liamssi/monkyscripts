@@ -3,7 +3,7 @@ import postcss from "rollup-plugin-postcss";
 import simplevars from "postcss-simple-vars";
 import nested from "postcss-nested";
 //import cssnext from "postcss-cssnext";
-const postcssPresetEnv = require('postcss-preset-env');
+const postcssPresetEnv = require("postcss-preset-env");
 import cssnano from "cssnano";
 export default {
   input: "src/index.ts",
@@ -11,6 +11,7 @@ export default {
     dir: "dist",
     name: "fbtool",
     format: "iife",
+    globals: { axios: "axios" },
   },
   plugins: [
     typescript(),
@@ -22,7 +23,7 @@ export default {
         postcssPresetEnv({ stage: 0 }),
         cssnano(),
       ],
-     // extract: true,
+      // extract: true,
       // Or with custom file name, it will generate file relative to bundle.js in v3
       //extract: "bundle.css",
     }),

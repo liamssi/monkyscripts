@@ -1,26 +1,24 @@
 // ==UserScript==
-// @require      file://C:\Users\is94\Desktop\monkyscripts\dist\index.js
-// @require      file://C:\Users\is94\Desktop\monkyscripts\dist\userscript.user.js
+// @require      file:///C:\Users\HP\Desktop\monkyscripts\dist\index.js
 // ==/UserScript==
-
 
 (function () {
   "use strict";
   //inject the css
- // const my_css = GM_getResourceText("CSS");
+  // const my_css = GM_getResourceText("CSS");
   // GM_addStyle(my_css);
   ///Your code here...
   // console.log("working... 555");
   //console.log("working. jjjj.", fbtool);
   // t();
- // console.log("init from studio");
+  // console.log("init from studio");
 
-
- console.log("----------------------studio--------------");
+  console.log("----------------------start test --------------");
+  fbtool.intercept();
+  console.log("----------------------start test --------------");
 })();
 
-
-let initUI = () => {
+let init = () => {
   let uiId = "fb-scrapper";
   let scrapBtnId = "fb-scrapper-start-btn";
   let ui = document.getElementById(uiId);
@@ -47,7 +45,7 @@ let initUI = () => {
     //stats
     stats = document.createElement("h1");
     stats.classList.add("title");
-    stats.innerHTML = "SCRAPED:" +" db.length";
+    stats.innerHTML = "SCRAPED:" + " db.length";
     ui.appendChild(stats);
 
     //save btn
