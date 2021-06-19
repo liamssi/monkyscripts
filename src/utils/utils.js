@@ -90,18 +90,7 @@ let spider = (url, headers, body, cursor = null) => {
     return nextCursor;
   };
 
-  let changeCursor = (body, cursor) => {
-    // console.log("body befor ::", body);
-    let params = new URLSearchParams(body);
-    let variables = JSON.parse(params.get("variables"));
-    variables.cursor = nextCursor;
-    variables = JSON.stringify(variables);
-    params.set("variables", variables);
-    body = params.toString();
-    // console.log("body after ::", body);
-    // console.log("cursor being chjanged", variables.cursor);
-    return body;
-  };
+ 
   var xhr = new XMLHttpRequest();
   xhr.open("POST", url);
   for (header in headers) {

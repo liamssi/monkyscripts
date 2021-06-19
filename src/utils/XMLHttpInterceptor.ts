@@ -1,27 +1,32 @@
 
-type matchRule = {
-    urlMatch: string | RegExp,
-    bodyMatch?: string | RegExp
-}
 
 export class XMLHttpInterceptor {
 
 
     private patched: boolean = false
     private rule: matchRule
-
-
-
-
+    //* 
     private XMLHttpRequestOpen = XMLHttpRequest.prototype.open
     private XMLHttpRequestSend = XMLHttpRequest.prototype.send;
     private XMLHttpRequestsetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
 
 
+  
     constructor(rule: matchRule) {
         this.rule = rule
     }
 
+    //triggers event when a match found
+    private triggerNextMatch (req:XMLHttpRequest):void{
+
+//        addEventListener("match", function(e) { console.log("********************event event ************") });
+        let matchEvent = new CustomEvent("match", {
+            detail: req
+            
+          });
+    
+        dispatchEvent(matchEvent)
+    }
 
 
     public get getPatched(): boolean {
@@ -37,7 +42,7 @@ export class XMLHttpInterceptor {
 
 
     // return a promise that resolves when the first match request found 
-    public patch(matchCallback: (request?: XMLHttpRequest, unpatch?: () => void) => void = () => { }) {
+    public patch(matchCallback: (request: XMLHttpRequest) => void = () => { }) {
 
         if (this.patched) {
             return
@@ -47,7 +52,8 @@ export class XMLHttpInterceptor {
         let XMLHttpRequestOpen = this.XMLHttpRequestOpen
         let XMLHttpRequestSend = this.XMLHttpRequestSend
         let XMLHttpRequestsetRequestHeader = this.XMLHttpRequestsetRequestHeader
-
+        //trigers the nextmatch event
+        let triggerNext=this.triggerNextMatch
 
         //* patch the open method to Capture 
         XMLHttpRequest.prototype.open = function (method: string, url: string, async?: boolean,): void {
@@ -65,8 +71,6 @@ export class XMLHttpInterceptor {
                 if (!this.headers) {
                     this.headers = {};
                 }
-                // Create a list for the header that if it does not exist
-
                 //!tst 
                 // if (!this.headers[header]) {
                 //     this.headers[header] = [];
@@ -84,13 +88,14 @@ export class XMLHttpInterceptor {
         XMLHttpRequest.prototype.send = function (body) {
 
             if (this.url?.match(targetUrlMatch) && body?.toString().match(bodyMatch)) {
-
+                //save the body
+                this.body=body
                 this.addEventListener(
                     "readystatechange", () => {
                         if (this.readyState == 4) {
 
                             matchCallback(this)
-
+                            triggerNext(this)
                         }
 
                     },
