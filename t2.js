@@ -1,236 +1,125 @@
-let XMLHttpRequestOpen = XMLHttpRequest.prototype.open;
-let XMLHttpRequestSend = XMLHttpRequest.prototype.send;
-let XMLHttpRequestsetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
-let patched = false;
-let db = [];
-let running = false;
-let stats;
-let lastCursor = null;
-let initUI = () => {
-  let uiId = "fb-scrapper";
-  let scrapBtnId = "fb-scrapper-start-btn";
-  let ui = document.getElementById(uiId);
-
-  if (!ui) {
-    //main ui
-    ui = document.createElement("div");
-    ui.id = uiId;
-    document.body.appendChild(ui);
-
-    //title
-    title = document.createElement("h1");
-    title.classList.add("title");
-    title.innerHTML = "FBG  SCRAPER v0.2";
-    ui.appendChild(title);
-
-    //play button
-    let scrapBtn = document.createElement("a");
-    scrapBtn.id = scrapBtnId;
-    scrapBtn.addEventListener("click", () => {
-      scrapBtn.classList.toggle("active");
-    });
-    ui.appendChild(scrapBtn);
-    //stats
-    stats = document.createElement("h1");
-    stats.classList.add("title");
-    stats.innerHTML = "SCRAPED:" + db.length;
-    ui.appendChild(stats);
-
-    //save btn
-    saveBtn = document.createElement("a");
-    saveBtn.classList.add("title");
-    saveBtn.innerHTML = "SAVE";
-    ui.appendChild(saveBtn);
-
-    return { scrapBtn, saveBtn };
+!(function (e) {
+  var t = {};
+  function n(o) {
+    if (t[o]) return t[o].exports;
+    var r = (t[o] = { i: o, l: !1, exports: {} });
+    return e[o].call(r.exports, r, r.exports, n), (r.l = !0), r.exports;
   }
-};
-
-let patch = (targetURL) => {
-  XMLHttpRequest.prototype.open = function (method, url, async, user, pass) {
-    XMLHttpRequest.prototype.url = url;
-    XMLHttpRequestOpen.call(this, method, url, async, user, pass);
-  };
-  XMLHttpRequest.prototype.setRequestHeader = function (header, value) {
-    // console.log("url from set header",header)
-    // this.prototype.headers
-
-    XMLHttpRequestsetRequestHeader.call(this, header, value);
-
-    if (!this.headers) {
-      this.headers = {};
-    }
-
-    // Create a list for the header that if it does not exist
-    if (!this.headers[header]) {
-      this.headers[header] = [];
-    }
-
-    // Add the value to the header
-    this.headers[header].push(value);
-  };
-
-  XMLHttpRequest.prototype.send = function (body) {
-    console.log("trying to find a valid request");
-    // console.log('this',this.url)
-    //unpatch()
-    if (
-      this.url.match(targetURL) &&
-      body.match(
-        "fb_api_req_friendly_name=GroupsCometMembersPageNewMembersSectionRefetchQuery"
+  (n.m = e),
+    (n.c = t),
+    (n.d = function (e, t, o) {
+      n.o(e, t) || Object.defineProperty(e, t, { enumerable: !0, get: o });
+    }),
+    (n.r = function (e) {
+      "undefined" != typeof Symbol &&
+        Symbol.toStringTag &&
+        Object.defineProperty(e, Symbol.toStringTag, { value: "Module" }),
+        Object.defineProperty(e, "__esModule", { value: !0 });
+    }),
+    (n.t = function (e, t) {
+      if ((1 & t && (e = n(e)), 8 & t)) return e;
+      if (4 & t && "object" == typeof e && e && e.__esModule) return e;
+      var o = Object.create(null);
+      if (
+        (n.r(o),
+          Object.defineProperty(o, "default", { enumerable: !0, value: e }),
+          2 & t && "string" != typeof e)
       )
-    ) {
-      console.log("found and unpatching");
-      this.addEventListener(
-        "readystatechange",
-        () => {
-          if (this.readyState == 4) {
-            // patchCallback(this.responseText)
-            spider(this.url, this.headers, body);
+        for (var r in e)
+          n.d(
+            o,
+            r,
+            function (t) {
+              return e[t];
+            }.bind(null, r)
+          );
+      return o;
+    }),
+    (n.n = function (e) {
+      var t =
+        e && e.__esModule
+          ? function () {
+            return e.default;
           }
+          : function () {
+            return e;
+          };
+      return n.d(t, "a", t), t;
+    }),
+    (n.o = function (e, t) {
+      return Object.prototype.hasOwnProperty.call(e, t);
+    }),
+    (n.p = ""),
+    n((n.s = 1342));
+})({
+  1342: function (e, t, n) {
+    "use strict";
+    Object.defineProperty(t, "__esModule", { value: !0 });
+    var o,
+      r = n(1343),
+      a = (o = r) && o.__esModule ? o : { default: o };
+    var i = [
+      "1",
+      "2",
+      "143839615565492452",
+      "7360555217192209452",
+      "7352899832704027180",
+    ];
+    function u() {
+      var e = window.location.href,
+        t = !(
+          !document.querySelector('[name="shopify-checkout-api-token"]') &&
+          !document.querySelector(
+            '[name="shopify-checkout-authorization-token"]'
+          )
+        ),
+        n = "shop.app" === window.location.hostname;
+      n &&
+        (e = JSON.parse(
+          document.querySelector('meta[name="shop"]').content
+        ).url),
+        a.default.detectStore(e, t, n).then(function (e) {
+          var t,
+            n = e && e.id,
+            o = !!n,
+            r = i.includes(n),
+            a = e && e.adblockState && e.adblockState.mayNeedWhitelist,
+            u = e && e.metadata && e.metadata.tagInSameTab;
+          o &&
+            !r &&
+            !u &&
+            a &&
+            (((t = document.createElement("a")).className =
+              "hss-abp-subscribe"),
+              (t.href =
+                "abp:subscribe?location=https://www.joinhoney.com/whitelist/honey-smart-shopping.txt&title=Honey-Smart-Shopping"),
+              (t.style.position = "fixed"),
+              (t.style.display = "block"),
+              t.style.left,
+              (t.style.opacity = 0),
+              (t.style.zIndex = 2147483647),
+              document.body.appendChild(t));
+        });
+    }
+    u(), (t.default = { detectStore: u });
+  },
+  1343: function (e, t, n) {
+    "use strict";
+    Object.defineProperty(t, "__esModule", { value: !0 }),
+      (t.default = {
+        detectStore: function (e, t, n) {
+          var o = {
+            service: "messages:cs",
+            type: "page:detect_store",
+            content: JSON.stringify({ url: e, isShopify: t, isShopifyPay: n }),
+            dest: { allTabs: !1, background: !0, ignoreResponse: !1 },
+          };
+          return new Promise(function (e) {
+            chrome.runtime.sendMessage(o, null, function (t) {
+              chrome.runtime.lastError ? e() : t.success ? e(t.data) : e();
+            });
+          });
         },
-        false
-      );
-
-      unpatch();
-    }
-
-    XMLHttpRequestSend.call(this, body);
-  };
-
-  patched = true;
-};
-
-let spider = (url, headers, body, cursor = null) => {
-  let parse = (data) => {
-    // console.log("extracting");
-
-    let nextCursor = null;
-    try {
-      data = JSON.parse(data).data;
-      //    console.log("data extracted", data);
-      let new_members = data.node.new_members;
-      //let next =data.node.new_members
-      if (new_members) {
-        for (m in new_members.edges) {
-          let user = new_members.edges[m].node;
-          //  console.log(user);
-          db.push({ name: user.name, url: user.url, type: user.__typename });
-        }
-        if (new_members.page_info.has_next_page) {
-          nextCursor = new_members.page_info.end_cursor;
-        }
-      }
-    } catch (e) {
-      console.log("catched", e);
-    }
-    // console.log("scrapped :::", db.length);
-    stats.innerHTML = "SCRAPED:" + db.length;
-    return nextCursor;
-  };
-
-  let changeCursor = (body, cursor) => {
-    // console.log("body befor ::", body);
-    let params = new URLSearchParams(body);
-    let variables = JSON.parse(params.get("variables"));
-    variables.cursor = nextCursor;
-    variables = JSON.stringify(variables);
-    params.set("variables", variables);
-    body = params.toString();
-    // console.log("body after ::", body);
-    // console.log("cursor being chjanged", variables.cursor);
-    return body;
-  };
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", url);
-  for (header in headers) {
-    xhr.setRequestHeader(header, headers[header]);
-  }
-  //xhr.setRequestHeader("alooha",5555)
-
-  xhr.onload = function () {
-    if (xhr.status === 200) {
-      nextCursor = parse(this.responseText);
-
-      //console.log("db", db);
-      if (nextCursor && running) {
-        body = changeCursor(body, nextCursor);
-        spider(url, headers, body);
-      }
-
-      //ready for next
-    } else {
-      console.log("reply errored");
-    }
-  };
-
-  xhr.send(body);
-};
-
-let unpatch = () => {
-  XMLHttpRequest.prototype.open = XMLHttpRequestOpen;
-  XMLHttpRequest.prototype.send = XMLHttpRequestSend;
-  XMLHttpRequest.prototype.setRequestHeader = XMLHttpRequestsetRequestHeader;
-  patched = false;
-};
-let scroll = () => {
-  const resizeObserver = new ResizeObserver((entries) => {
-    //console.log('Body height changed:', entries[0].target.clientHeight)
-    if (patched) {
-      window.scrollTo(0, document.body.scrollHeight);
-    }
-  });
-
-  // start observing a DOM node
-  resizeObserver.observe(document.body);
-};
-
-let save = (filename = "scrap.txt", type = "text") => {
-  console.log("download");
-
-  let data = "";
-  for (record in db) {
-    //console.log("record :::",db[record])
-    let user = db[record];
-    data += user.name + ";" + user.url + "\n";
-  }
-  var file = new Blob([data], { type: type });
-  // Others
-  var a = document.createElement("a"),
-    url = URL.createObjectURL(file);
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(function () {
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-  }, 0);
-};
-
-let run = function () {
-  running = true;
-  patch("/graphql");
-};
-let stop = function () {
-  unpatch("/graphql");
-  running = false;
-};
-
-function init() {
-  let { scrapBtn, saveBtn } = initUI();
-
-  //  console.log("returned ", scrapBtn, stats,saveBtn)
-
-  scrapBtn.addEventListener("click", () => {
-    if (running) {
-      stop();
-    } else {
-      run();
-    }
-  });
-
-  saveBtn.addEventListener("click", () => {
-    save();
-  });
-}
+      });
+  },
+});

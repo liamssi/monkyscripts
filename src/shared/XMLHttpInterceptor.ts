@@ -11,20 +11,20 @@ export class XMLHttpInterceptor {
     private XMLHttpRequestsetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
 
 
-  
+
     constructor(rule: matchRule) {
         this.rule = rule
     }
 
     //triggers event when a match found
-    private triggerNextMatch (req:XMLHttpRequest):void{
+    private triggerNextMatch(req: XMLHttpRequest): void {
 
-//        addEventListener("match", function(e) { console.log("********************event event ************") });
+        //        addEventListener("match", function(e) { console.log("********************event event ************") });
         let matchEvent = new CustomEvent("match", {
             detail: req
-            
-          });
-    
+
+        });
+
         dispatchEvent(matchEvent)
     }
 
@@ -53,7 +53,7 @@ export class XMLHttpInterceptor {
         let XMLHttpRequestSend = this.XMLHttpRequestSend
         let XMLHttpRequestsetRequestHeader = this.XMLHttpRequestsetRequestHeader
         //trigers the nextmatch event
-        let triggerNext=this.triggerNextMatch
+        let triggerNext = this.triggerNextMatch
 
         //* patch the open method to Capture 
         XMLHttpRequest.prototype.open = function (method: string, url: string, async?: boolean,): void {
@@ -89,19 +89,21 @@ export class XMLHttpInterceptor {
 
             if (this.url?.match(targetUrlMatch) && body?.toString().match(bodyMatch)) {
                 //save the body
-                this.body=body
-                this.addEventListener(
-                    "readystatechange", () => {
-                        if (this.readyState == 4) {
+                this.body = body
+                matchCallback(this)
+                triggerNext(this)
+                // this.addEventListener(
+                //     "readystatechange", () => {
+                //         if (this.readyState == 4) {
 
-                            matchCallback(this)
-                            triggerNext(this)
-                        }
+                //             matchCallback(this)
+                //             triggerNext(this)
+                //         }
 
-                    },
+                //     },
 
-                    false
-                );
+                //     false
+                // );
 
 
             }
