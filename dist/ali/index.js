@@ -1,5 +1,49 @@
-var alitools = (function (exports) {
+var alitools = (function (exports, Queue) {
     'use strict';
+
+    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+    var Queue__default = /*#__PURE__*/_interopDefaultLegacy(Queue);
+
+    const initUI = (btnCallback) => {
+        console.log("buiolding the ui ...");
+        let uiId = "ali-coupont-tester";
+        let ui = document.getElementById(uiId);
+        if (!ui) {
+            //main ui
+            ui = document.createElement("div");
+            ui.id = uiId;
+            document.body.appendChild(ui);
+            //title
+            let title = document.createElement("h1");
+            title.classList.add("title");
+            title.innerHTML = "AliCoupons tester v1.0";
+            ui.appendChild(title);
+            //coupons inpute 
+            let couponsIpute = document.createElement("textarea");
+            ui.appendChild(couponsIpute);
+            //run button
+            let runBtn = document.createElement("button");
+            // runBtn.id = runBtnId;
+            runBtn.textContent = "run";
+            runBtn.addEventListener("click", () => {
+                runBtn.classList.toggle("active");
+                btnCallback(couponsIpute.value);
+            });
+            runBtn.type = "submit";
+            ui.appendChild(runBtn);
+            //stats
+            //  let stats = document.createElement("h1");
+            // stats.classList.add("title");
+            // stats.innerHTML = "SCRAPED:" + db.length;
+            // ui.appendChild(stats);
+            //save btn
+            let saveBtn = document.createElement("a");
+            saveBtn.classList.add("title");
+            saveBtn.innerHTML = "SAVE";
+            ui.appendChild(saveBtn);
+        }
+    };
 
     class XMLHttpInterceptor {
         constructor(rule) {
@@ -95,83 +139,71 @@ var alitools = (function (exports) {
         }
     }
 
-    const initUI = (btnCallback) => {
-        console.log("buiolding the ui ...");
-        let uiId = "ali-coupont-tester";
-        let ui = document.getElementById(uiId);
-        if (!ui) {
-            //main ui
-            ui = document.createElement("div");
-            ui.id = uiId;
-            document.body.appendChild(ui);
-            //title
-            let title = document.createElement("h1");
-            title.classList.add("title");
-            title.innerHTML = "AliCoupons tester v1.0";
-            ui.appendChild(title);
-            //coupons inpute 
-            let couponsIpute = document.createElement("textarea");
-            ui.appendChild(couponsIpute);
-            //run button
-            let runBtn = document.createElement("button");
-            // runBtn.id = runBtnId;
-            runBtn.textContent = "run";
-            runBtn.addEventListener("click", () => {
-                runBtn.classList.toggle("active");
-                btnCallback(couponsIpute.value);
-            });
-            runBtn.type = "submit";
-            ui.appendChild(runBtn);
-            //stats
-            //  let stats = document.createElement("h1");
-            // stats.classList.add("title");
-            // stats.innerHTML = "SCRAPED:" + db.length;
-            // ui.appendChild(stats);
-            //save btn
-            let saveBtn = document.createElement("a");
-            saveBtn.classList.add("title");
-            saveBtn.innerHTML = "SAVE";
-            ui.appendChild(saveBtn);
-        }
-    };
-
-    const test = (coupons) => {
-        // console.log("testing coupon ::",);
-        //find the coupon text input ant type coupon 
+    const testCoupons = (coupons) => {
+        let q = new Queue__default['default']();
+        let interceptor = new XMLHttpInterceptor({ urlMatch: "/orders/coupons.do", });
+        //console.log("patching xhr requests");
+        document.addEventListener("coupontest", (ev) => {
+            console.log("[-]coupon tested (event)", ev.detail);
+        });
+        interceptor.patch((request) => {
+            request.addEventListener("readystatechange", (ev) => {
+                if (request.readyState == 4) {
+                    //console.clear()
+                    // interceptor.unpatch()
+                    console.log("found a coupon request ::: ", request.response);
+                    const couponEvent = new CustomEvent('coupontest', { detail: request.response });
+                    document.dispatchEvent(couponEvent);
+                }
+            }, false);
+        });
+        // console.log("exported init function ");
         coupons.forEach((coupon) => {
             console.log("testing coupon ::", coupon);
+            q.push(function (cb) {
+                const result = 'two';
+                cb(null, result);
+            });
             //find the coupon text input ant type coupon 
         });
         t(coupons[0]);
     };
     let t = (coupon) => {
-        //ae_button_type="coupon_code"
-        let couponInput = document.getElementById("code");
-        document.getElementById("code").value = "bbbbbbbb";
-        let couponSubmit = document.querySelector("[ae_button_type='coupon_code'][type='button']");
-        console.log("running the final test for ::", couponSubmit);
+        // @ts-ignore: Unreachable code error
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+        const couponInput = document.getElementById("code");
+        const couponSubmit = document.querySelector("[ae_button_type='coupon_code'][type='button']");
         if (couponInput) {
-            couponInput.value = coupon;
-            // couponInput.focus()
-            // let e1= new Event('keydown', {
-            //     bubbles: true,
-            //     cancelable: true,
-            //         });
-            // let e2= new Event('keyup', {
-            //     bubbles: true,
-            //     cancelable: true,
-            // });
-            couponInput.click();
-            couponInput.dispatchEvent(new Event('focus'));
-            couponInput.dispatchEvent(new KeyboardEvent('keypress', { 'key': 'a' }));
+            // @ts-ignore: Unreachable code error
+            nativeInputValueSetter.call(couponInput, coupon);
+            const inputEvent = new Event('input', { bubbles: true });
+            couponInput.dispatchEvent(inputEvent);
+            couponSubmit.click();
+            //     //couponInput.focus()
+            //     let e1 = new Event('input', {
+            //         bubbles: true,
+            //         cancelable: true,
+            //     });
+            //     // let e2 = new Event('keyup', {
+            //     //     bubbles: true,
+            //     //     cancelable: true,
+            //     // });
+            //     couponInput.click()
+            //     couponInput.focus()
+            //     //couponInput.value = coupon
+            //     couponInput.dispatchEvent(new Event('keydown'));
+            //     couponInput.dispatchEvent(new KeyboardEvent('keypress', { 'key': 'a' }));
+            //     couponInput.dispatchEvent(new Event('input'));
+            //     couponInput.dispatchEvent(new Event('change'));
+            //     couponInput.dispatchEvent(new Event('keyup'));
+            //     couponInput.blur()
+            //     //couponInput.dispatchEvent(new Event('blur'));
+            //     // couponInput.dispatchEvent(new Event('focus'));
+            //     // couponInput.dispatchEvent(new KeyboardEvent('keypress', { 'key': 'a' }));
+            //     //couponInput.dispatchEvent(e1);
+            //     // couponInput.dispatchEvent(e2);
         }
-        $('#code').keydown();
-        $('#code').keypress();
-        $('#code').keyup();
-        console.log("--------------------------key pressed", $);
-        //couponInput.dispatchEvent(e1);
-        //couponInput.dispatchEvent(e2);}
-        //couponInput.click()
+        // couponInput.click()
     };
 
     function styleInject(css, ref) {
@@ -213,67 +245,69 @@ var alitools = (function (exports) {
                 // console.log(lines[i])
                 //code here using lines[i] which will give you each line
             }
-            test(lines);
+            testCoupons(lines);
         });
-        let interceptor = new XMLHttpInterceptor({ urlMatch: "/orders/coupons.do", });
-        console.log("patching xhr requests");
-        interceptor.patch((request) => {
-            request.addEventListener("readystatechange", (ev) => {
-                if (request.readyState == 4) {
-                    console.clear();
-                    interceptor.unpatch();
-                    console.log("found a coupon request ::: ", request.response);
-                    repeat(request);
-                    // for (let i = 0; i < 10; i++) {
-                    //     try {
-                    //         request.open("post", request.url || "")
-                    //         request.send(request.body)
-                    //         console.log("request sent")
-                    //     } catch (error) {
-                    //         console.log("repinting request failled", error);
-                    //     }
-                    // }
-                }
-            }, false);
-        });
+        // let interceptor = new XMLHttpInterceptor({ urlMatch: "/orders/coupons.do", })
+        // //console.log("patching xhr requests");
+        // interceptor.patch((request) => {
+        //     request.addEventListener(
+        //         "readystatechange", (ev) => {
+        //             if (request.readyState == 4) {
+        //                 console.clear()
+        //                 interceptor.unpatch()
+        //                 console.log("found a coupon request ::: ", request.response)
+        //                 //  repeat(request)
+        //                 // for (let i = 0; i < 10; i++) {
+        //                 //     try {
+        //                 //         request.open("post", request.url || "")
+        //                 //         request.send(request.body)
+        //                 //         console.log("request sent")
+        //                 //     } catch (error) {
+        //                 //         console.log("repinting request failled", error);
+        //                 //     }
+        //                 // }
+        //             }
+        //         },
+        //         false
+        //     );
+        // })
         console.log("exported init function ");
     };
-    let repeat = (request) => {
-        console.log("repeating request (body)::", request.body);
-        let headers = request === null || request === void 0 ? void 0 : request.headers;
-        let url = request.url || "";
-        let body = request.body;
-        let xhr = new XMLHttpRequest();
-        // if (request.body) {
-        //   body = changeCursor(this.httpRequestConfig?.body.toString(), this.cursor || '')
-        // }
-        xhr.open("POST", url);
-        for (let header in headers) {
-            xhr.setRequestHeader(header, headers[header]);
-            //   //console.log(`header :: ${header} __ value ::${headers[header]}`);
-        }
-        // //set load event
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                //     //nextCursor = parse(this.responseText);
-                let response = xhr.response;
-                console.log("request repeate responce ::", response);
-                //     //!parse and save 
-                //     //! set next cursor
-                //     //! fetch next?
-                //     //console.log("db", db);
-                //     // if (nextCursor && running) {
-                //     // body = changeCursor(body, nextCursor);
-                //     // spider(url, headers, body);
-                //     // }
-                //     //ready for next
-            }
-            else {
-                console.log("reply errored");
-            }
-        };
-        xhr.send(body);
-    };
+    // let repeat = (request: XMLHttpRequest) => {
+    //     console.log("repeating request (body)::", request.body)
+    //     let headers = request?.headers
+    //     let url = request.url || ""
+    //     let body = request.body
+    //     let xhr = new XMLHttpRequest();
+    //     // if (request.body) {
+    //     //   body = changeCursor(this.httpRequestConfig?.body.toString(), this.cursor || '')
+    //     // }
+    //     xhr.open("POST", url);
+    //     for (let header in headers) {
+    //         xhr.setRequestHeader(header, headers[header]);
+    //         //   //console.log(`header :: ${header} __ value ::${headers[header]}`);
+    //     }
+    //     // //set load event
+    //     xhr.onload = function () {
+    //         if (xhr.status === 200) {
+    //             //     //nextCursor = parse(this.responseText);
+    //             let response = xhr.response
+    //             // console.log("request repeate responce ::", response)
+    //             //     //!parse and save 
+    //             //     //! set next cursor
+    //             //     //! fetch next?
+    //             //     //console.log("db", db);
+    //             //     // if (nextCursor && running) {
+    //             //     // body = changeCursor(body, nextCursor);
+    //             //     // spider(url, headers, body);
+    //             //     // }
+    //             //     //ready for next
+    //         } else {
+    //             console.log("reply errored");
+    //         }
+    //     };
+    //     xhr.send(body)
+    // }
 
     exports.init = init;
 
@@ -281,4 +315,4 @@ var alitools = (function (exports) {
 
     return exports;
 
-}({}));
+}({}, Queue));

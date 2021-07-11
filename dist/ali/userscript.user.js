@@ -1,7 +1,10 @@
 // ==UserScript==
-// @require      file://C:\Users\is94\Desktop\monkyscripts\dist\ali\index.js
+
 // ==/UserScript==
 
+/*
+// @require      file://C:\Users\is94\Desktop\monkyscripts\dist\ali\index.js
+*/
 
 (function () {
   "use strict";
@@ -13,9 +16,21 @@
   //console.log("working. jjjj.", fbtool);
   // t();
   // console.log("init from studio");
-  console.clear()
+  Element.prototype._addEventListener = Element.prototype.addEventListener;
+  Element.prototype.addEventListener = function () {
+    let args = [...arguments];
+    let temp = args[1];
+    args[1] = function () {
+      let args2 = [...arguments];
+      args2[0] = Object.assign({}, args2[0]);
+      args2[0].isTrusted = true;
+      return temp(...args2);
+    };
+    return this._addEventListener(...args);
+  };
+  console.clear();
   console.log("----------------------start test --------------");
-  alitools.init()
+  alitools.init();
   console.log("----------------------start test --------------");
 })();
 

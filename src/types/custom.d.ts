@@ -15,11 +15,12 @@ declare global {
         urlMatch: string | RegExp,
         bodyMatch?: string | RegExp
     }
-     type facebookPost={
-         text:''
-         url:'',
-         creationTime
+    type facebookPost = {
+        text: ''
+        url: '',
+        creationTime
 
-     }
-    
+    }
+
 }
+
