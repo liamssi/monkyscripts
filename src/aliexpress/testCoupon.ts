@@ -1,115 +1,107 @@
-import { XMLHttpInterceptor } from '../shared/XMLHttpInterceptor';
-import Queue from "queue"
+import { XMLHttpInterceptor } from "../shared/XMLHttpInterceptor";
+export const testCoupons = async (coupons: string[]) => {
+    let res: Record<string, any> = {};
 
-
-
-
-export const testCoupons = (coupons: string[]) => {
-
-
-    let q = new Queue()
-    let interceptor = new XMLHttpInterceptor({ urlMatch: "/orders/coupons.do", })
-    //console.log("patching xhr requests");
-    document.addEventListener("coupontest", (ev: any) => {
-
-
-        console.log(
-            "[-]coupon tested (event)", ev.detail
-        );
-
-    })
-    interceptor.patch((request) => {
-
-        request.addEventListener(
-            "readystatechange", (ev) => {
-                if (request.readyState == 4) {
-
-                    //console.clear()
-                    // interceptor.unpatch()
-                    console.log("found a coupon request ::: ", request.response)
-
-                    const couponEvent = new CustomEvent('coupontest', { detail: request.response });
-                    document.dispatchEvent(couponEvent);
-
-
-                }
-
-            },
-
-            false
-        );
-
-
-    })
-    // console.log("exported init function ");
-    coupons.forEach((coupon) => {
-
-        console.log("testing coupon ::", coupon)
-
-        q.push(function (cb) {
-            const result = 'two'
-            cb(null, result)
-        })
-
-        //find the coupon text input ant type coupon 
-    })
-
-
-    t(coupons[0])
-}
-let l = (coupon: string) => {
-    console.log(" lo-----------ging>", coupon)
-    // @ts-ignore: Unreachable code error
-    this.next()
-
-}
-let t = (coupon: string) => {
-
-    // @ts-ignore: Unreachable code error
-    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-    const couponInput = <HTMLInputElement>document.getElementById("code");
-    const couponSubmit = <HTMLInputElement>document.querySelector("[ae_button_type='coupon_code'][type='button']")
-
-    if (couponInput) {
-
-        // @ts-ignore: Unreachable code error
-        nativeInputValueSetter.call(couponInput, coupon);
-
-        const inputEvent = new Event('input', { bubbles: true });
-        couponInput.dispatchEvent(inputEvent);
-        couponSubmit.click()
-        //     //couponInput.focus()
-        //     let e1 = new Event('input', {
-        //         bubbles: true,
-        //         cancelable: true,
-        //     });
-
-        //     // let e2 = new Event('keyup', {
-        //     //     bubbles: true,
-        //     //     cancelable: true,
-        //     // });
-        //     couponInput.click()
-        //     couponInput.focus()
-        //     //couponInput.value = coupon
-        //     couponInput.dispatchEvent(new Event('keydown'));
-        //     couponInput.dispatchEvent(new KeyboardEvent('keypress', { 'key': 'a' }));
-        //     couponInput.dispatchEvent(new Event('input'));
-        //     couponInput.dispatchEvent(new Event('change'));
-        //     couponInput.dispatchEvent(new Event('keyup'));
-
-        //     couponInput.blur()
-        //     //couponInput.dispatchEvent(new Event('blur'));
-        //     // couponInput.dispatchEvent(new Event('focus'));
-        //     // couponInput.dispatchEvent(new KeyboardEvent('keypress', { 'key': 'a' }));
-        //     //couponInput.dispatchEvent(e1);
-        //     // couponInput.dispatchEvent(e2);
+    for (let coupon of coupons) {
+        // console.log("testing coupon ::", coupon)
+        let r = await testCoupon(coupon);
+        res.coupn = r;
+        //console.log("testing next")
     }
-    // couponInput.click()
+};
 
+let testCoupon = (coupon: string) => {
+    return new Promise<void>((resolve, reject) => {
+        // @ts-ignore: Unreachable code error
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+            window.HTMLInputElement.prototype,
+            "value"
+        ).set;
+        const couponInput = <HTMLInputElement>document.getElementById("code");
+        const couponSubmit = <HTMLInputElement>(
+            document.querySelector("[ae_button_type='coupon_code'][type='button']")
+        );
 
+        let applyCoupon = () => {
+            // @ts-ignore: Unreachable code error
+            nativeInputValueSetter.call(couponInput, coupon);
+            const inputEvent = new Event("input", { bubbles: true });
+            couponInput.dispatchEvent(inputEvent);
+            couponSubmit.click();
+        };
+        let interceptResult = () => {
+            let interceptor = new XMLHttpInterceptor({
+                urlMatch: "/orders/coupons.do",
+            });
+            interceptor.patch((request) => {
+                request.addEventListener(
+                    "readystatechange",
+                    (ev) => {
+                        if (request.readyState == 4) {
+                            interceptor.unpatch();
+                            //console.log("found a coupon request ::: ", request.response)
 
+                            let result = parseCouponTestResult(coupon, request.response);
+                            setTimeout((result: any) => resolve(result), 500);
+                            // resolve()
+                        }
+                    },
+                    false
+                );
+            });
+        };
+        //REMOVE COUPON IF EXIST
+        if (couponSubmit.textContent != "Apply") {
+            // alert("removing")
+            couponSubmit.click();
 
-}
+            let interceptor = new XMLHttpInterceptor({
+                urlMatch: "/orders/coupons.do",
+            });
+            interceptor.patch((request) => {
+                request.addEventListener(
+                    "readystatechange",
+                    (ev) => {
+                        if (request.readyState == 4) {
+                            interceptor.unpatch();
+                            interceptResult();
+                            applyCoupon();
+                        }
+                    },
+                    false
+                );
+            });
+        } else {
+            if (couponInput) {
+                interceptResult();
+                applyCoupon();
+            }
+        }
+    });
+};
 
+let parseCouponTestResult = (coupon: string, responce: any) => {
+    console.log("coupon :::", coupon);
+    let couponCode = responce.price.couponCode;
+    //console.log(`parsing test result for ${coupon} :: `, responce);
+    //if (responce.price) console.log("price object ::", responce.price);
 
+    let res: any;
+    try {
+        res = {
+            coupon: couponCode.platformCouponCode,
+            msg: couponCode.couponCodeWarnMsg,
+            amount: couponCode.couponCodeAmount.formatted,
+        };
+        console.log("parse res :::", res)
+    } catch {
+        res = {
+            coupon: coupon,
+            msg: couponCode.couponCodeWarnMsg,
+            //amount: couponCode.couponCodeAmount.formatted
+        };
+    }
 
+    // console.log("parse res :::", res);
+    return res;
+};

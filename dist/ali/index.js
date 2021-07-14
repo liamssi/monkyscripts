@@ -1,9 +1,5 @@
-var alitools = (function (exports, Queue) {
+var alitools = (function (exports) {
     'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var Queue__default = /*#__PURE__*/_interopDefaultLegacy(Queue);
 
     const initUI = (btnCallback) => {
         console.log("buiolding the ui ...");
@@ -44,6 +40,31 @@ var alitools = (function (exports, Queue) {
             ui.appendChild(saveBtn);
         }
     };
+
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+
+    function __awaiter(thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    }
 
     class XMLHttpInterceptor {
         constructor(rule) {
@@ -139,71 +160,90 @@ var alitools = (function (exports, Queue) {
         }
     }
 
-    const testCoupons = (coupons) => {
-        let q = new Queue__default['default']();
-        let interceptor = new XMLHttpInterceptor({ urlMatch: "/orders/coupons.do", });
-        //console.log("patching xhr requests");
-        document.addEventListener("coupontest", (ev) => {
-            console.log("[-]coupon tested (event)", ev.detail);
-        });
-        interceptor.patch((request) => {
-            request.addEventListener("readystatechange", (ev) => {
-                if (request.readyState == 4) {
-                    //console.clear()
-                    // interceptor.unpatch()
-                    console.log("found a coupon request ::: ", request.response);
-                    const couponEvent = new CustomEvent('coupontest', { detail: request.response });
-                    document.dispatchEvent(couponEvent);
-                }
-            }, false);
-        });
-        // console.log("exported init function ");
-        coupons.forEach((coupon) => {
-            console.log("testing coupon ::", coupon);
-            q.push(function (cb) {
-                const result = 'two';
-                cb(null, result);
-            });
-            //find the coupon text input ant type coupon 
-        });
-        t(coupons[0]);
-    };
-    let t = (coupon) => {
-        // @ts-ignore: Unreachable code error
-        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-        const couponInput = document.getElementById("code");
-        const couponSubmit = document.querySelector("[ae_button_type='coupon_code'][type='button']");
-        if (couponInput) {
-            // @ts-ignore: Unreachable code error
-            nativeInputValueSetter.call(couponInput, coupon);
-            const inputEvent = new Event('input', { bubbles: true });
-            couponInput.dispatchEvent(inputEvent);
-            couponSubmit.click();
-            //     //couponInput.focus()
-            //     let e1 = new Event('input', {
-            //         bubbles: true,
-            //         cancelable: true,
-            //     });
-            //     // let e2 = new Event('keyup', {
-            //     //     bubbles: true,
-            //     //     cancelable: true,
-            //     // });
-            //     couponInput.click()
-            //     couponInput.focus()
-            //     //couponInput.value = coupon
-            //     couponInput.dispatchEvent(new Event('keydown'));
-            //     couponInput.dispatchEvent(new KeyboardEvent('keypress', { 'key': 'a' }));
-            //     couponInput.dispatchEvent(new Event('input'));
-            //     couponInput.dispatchEvent(new Event('change'));
-            //     couponInput.dispatchEvent(new Event('keyup'));
-            //     couponInput.blur()
-            //     //couponInput.dispatchEvent(new Event('blur'));
-            //     // couponInput.dispatchEvent(new Event('focus'));
-            //     // couponInput.dispatchEvent(new KeyboardEvent('keypress', { 'key': 'a' }));
-            //     //couponInput.dispatchEvent(e1);
-            //     // couponInput.dispatchEvent(e2);
+    const testCoupons = (coupons) => __awaiter(void 0, void 0, void 0, function* () {
+        for (let coupon of coupons) {
+            // console.log("testing coupon ::", coupon)
+            yield testCoupon(coupon);
+            //console.log("testing next")
         }
-        // couponInput.click()
+    });
+    let testCoupon = (coupon) => {
+        return new Promise((resolve, reject) => {
+            // @ts-ignore: Unreachable code error
+            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+            const couponInput = document.getElementById("code");
+            const couponSubmit = (document.querySelector("[ae_button_type='coupon_code'][type='button']"));
+            let applyCoupon = () => {
+                // @ts-ignore: Unreachable code error
+                nativeInputValueSetter.call(couponInput, coupon);
+                const inputEvent = new Event("input", { bubbles: true });
+                couponInput.dispatchEvent(inputEvent);
+                couponSubmit.click();
+            };
+            let interceptResult = () => {
+                let interceptor = new XMLHttpInterceptor({
+                    urlMatch: "/orders/coupons.do",
+                });
+                interceptor.patch((request) => {
+                    request.addEventListener("readystatechange", (ev) => {
+                        if (request.readyState == 4) {
+                            interceptor.unpatch();
+                            //console.log("found a coupon request ::: ", request.response)
+                            parseCouponTestResult(coupon, request.response);
+                            setTimeout((result) => resolve(result), 500);
+                            // resolve()
+                        }
+                    }, false);
+                });
+            };
+            //REMOVE COUPON IF EXIST
+            if (couponSubmit.textContent != "Apply") {
+                // alert("removing")
+                couponSubmit.click();
+                let interceptor = new XMLHttpInterceptor({
+                    urlMatch: "/orders/coupons.do",
+                });
+                interceptor.patch((request) => {
+                    request.addEventListener("readystatechange", (ev) => {
+                        if (request.readyState == 4) {
+                            interceptor.unpatch();
+                            interceptResult();
+                            applyCoupon();
+                        }
+                    }, false);
+                });
+            }
+            else {
+                if (couponInput) {
+                    interceptResult();
+                    applyCoupon();
+                }
+            }
+        });
+    };
+    let parseCouponTestResult = (coupon, responce) => {
+        console.log("coupon :::", coupon);
+        let couponCode = responce.price.couponCode;
+        //console.log(`parsing test result for ${coupon} :: `, responce);
+        //if (responce.price) console.log("price object ::", responce.price);
+        let res;
+        try {
+            res = {
+                coupon: couponCode.platformCouponCode,
+                msg: couponCode.couponCodeWarnMsg,
+                amount: couponCode.couponCodeAmount.formatted,
+            };
+            console.log("parse res :::", res);
+        }
+        catch (_a) {
+            res = {
+                coupon: coupon,
+                msg: couponCode.couponCodeWarnMsg,
+                //amount: couponCode.couponCodeAmount.formatted
+            };
+        }
+        // console.log("parse res :::", res);
+        return res;
     };
 
     function styleInject(css, ref) {
@@ -315,4 +355,4 @@ var alitools = (function (exports, Queue) {
 
     return exports;
 
-}({}, Queue));
+}({}));
